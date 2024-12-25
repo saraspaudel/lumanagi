@@ -6,6 +6,7 @@ const assert = require("assert");
 const config = require('./config')
 var cron = require('node-cron');
 const mysql = require('mysql2');
+const axios = require('axios');
 
 const CryptoJS = require("crypto-js");
 var keySize = 256;
@@ -86,6 +87,17 @@ res.json({
   ket :privateKey
 })
 })
+
+app.get("/saras/apitest", async function (req, res) {
+    try {
+        let response = await axios.get("https://api.etherscan.io/v2/api?chainid=1&module=stats&action=ethprice&apikey=${process.env.ETHERSCAN_API_KEY}");
+        console.log(`At timestamp ${response.data.result.ethusd_timestamp} the price of ETH right now in terms of USDT is: ${response.data.result.ethusd}`);
+        res.json(`At timestamp ${response.data.result.ethusd_timestamp} the price of ETH right now in terms of USDT is: ${response.data.result.ethusd}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 
